@@ -1,21 +1,25 @@
 import flet
 from flet_core import Page, ThemeMode
 
-from views.simple_view import SimpleView
+from pages.main_page import MainPage
 
 
 def main(page: Page):
-    page.title = "Flet counter example"
-    page.window_width = 800
-    page.window_height = 500
+    page.title = "Game Music Desktop"
+    page.window_width = 900
+    page.window_max_width = 900
+    page.window_min_width = 900
 
-    page.theme_mode = ThemeMode.LIGHT
+    page.window_height = 600
+    page.window_max_height = 600
+    page.window_min_height = 600
+
+    page.theme_mode = ThemeMode.DARK
 
     page.padding = 0
 
-    page.add(
-        SimpleView()
-    )
+    page.add(MainPage())
 
 
-flet.app(target=main)
+if __name__ == '__main__':
+    flet.app(target=main)
