@@ -1,4 +1,5 @@
 import flet
+from flet import WEB_BROWSER
 from flet_core import Page, ThemeMode
 
 from pages.main_page import MainPage
@@ -17,6 +18,10 @@ def main(page: Page):
     page.theme_mode = ThemeMode.DARK
 
     page.padding = 0
+
+    page.fonts = {
+        "JetBrainsMono": "fonts/JetBrainsMono.ttf",
+    }
 
     page.add(MainPage())
 
