@@ -1,1 +1,2 @@
 1. Добавить возможность управлять воспроизведением музыки на Windows (System Media Transport Controls).
+2. Проверить работоспособность mpris2 в графических окружениях, отличных от gnome (KDE, XFCE, Cinnamon).
