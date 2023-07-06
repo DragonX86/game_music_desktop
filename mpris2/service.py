@@ -13,7 +13,9 @@ class Mpris2Service(Object):
     def __init__(self):
         self.loop = MainLoop()
 
-        session_bus = SessionBus(mainloop=DBusGMainLoop())
+        DBusGMainLoop(set_as_default=True)
+
+        session_bus = SessionBus()
         bus = BusName(PlayerIdentity, session_bus)
 
         super().__init__(bus, ObjectPath)
@@ -32,7 +34,7 @@ class Mpris2Service(Object):
     def PlayPause(self):
         if self.state['playback_status'] == PlaybackStatus.Playing:
             self.state['playback_status'] = PlaybackStatus.Paused
-            self.PropertiesChanged(PlayerInterface, {'PlaybackStatus': 'Paused'}, [])
+            self.Set(PlayerInterface, 'PlaybackStatus', 'Paused')
         else:
             self.state['playback_status'] = PlaybackStatus.Playing
             self.Set(PlayerInterface, 'PlaybackStatus', 'Playing')
@@ -44,14 +46,6 @@ class Mpris2Service(Object):
     @dbus.service.method(PlayerInterface, in_signature='', out_signature='')
     def Previous(self):
         print("dbus Previous method")
-
-    @dbus.service.method(PlayerInterface, in_signature='s', out_signature='')
-    def OpenUri(self, uri):
-        pass
-
-    @dbus.service.method(PlayerInterface, in_signature='ox', out_signature='')
-    def SetPosition(self, track_id, position):
-        pass
 
     @dbus.service.signal(dbus.PROPERTIES_IFACE, signature='sa{sv}as')
     def PropertiesChanged(self, interface, changed_properties, invalidated_properties=None):
@@ -72,24 +66,23 @@ class Mpris2Service(Object):
                 {
                     'Metadata': Dictionary(
                         {
+                            'mpris:artUrl': 'file:///home/denis/Загрузки/m1000x1000.jpeg',
                             'xesam:artist': ['Celldweller'],
                             'xesam:album': 'SwitchBack',
                             'xesam:title': 'SwitchBack'
                         },
                         signature='sv'
                     ),
+                    'PlaybackStatus': self.state['playback_status'].value,
                     'Rate': 1.0,
                     'MinimumRate': 1.0,
                     'MaximumRate': 1.0,
                     'CanGoNext': True,
                     'CanGoPrevious': True,
                     'CanControl': True,
-                    'CanSeek': True,
                     'CanPause': True,
                     'CanPlay': True,
                     'Position': 0,
-                    'Shuffle':  ShuffleMode.Off.value,
-                    'PlaybackStatus': self.state['playback_status'].value,
                     'Volume': 0,
                 },
                 signature='sv', variant_level=2
@@ -101,26 +94,13 @@ class Mpris2Service(Object):
                     'CanQuit': True,
                     'CanRaise': True,
                     'HasTrackList': False,
-                    'SupportedUriSchemes': ['http', 'file', 'fuo'],
+                    'SupportedUriSchemes': ['file'],
                     'SupportedMimeTypes': [
-                        'audio/aac',
-                        'audio/m4a',
                         'audio/mp3',
-                        'audio/wav',
-                        'audio/wma',
-                        'audio/x-ape',
-                        'audio/x-flac',
-                        'audio/x-ogg',
-                        'audio/x-oggflac',
-                        'audio/x-vorbis'
                     ]
                 },
                 signature='sv'
             )
-        raise dbus.exceptions.DBusException(
-            'com.example.UnknownInterface',
-            f'The Foo object does not implement the {interface} interface'
-        )
 
     @dbus.service.method(AppInterface, in_signature='', out_signature='')
     def Quit(self):

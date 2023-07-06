@@ -1,4 +1,4 @@
-AppInterface = 'org.mpris2.MediaPlayer2'
-PlayerInterface = 'org.mpris2.MediaPlayer2.Player'
-PlayerIdentity = 'org.mpris2.MediaPlayer2.gmd'
-ObjectPath = '/org/mpris2/MediaPlayer2'
+AppInterface = 'org.mpris.MediaPlayer2'
+PlayerInterface = 'org.mpris.MediaPlayer2.Player'
+PlayerIdentity = 'org.mpris.MediaPlayer2.gmd'
+ObjectPath = '/org/mpris/MediaPlayer2'
