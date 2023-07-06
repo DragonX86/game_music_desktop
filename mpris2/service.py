@@ -5,22 +5,22 @@ from dbus.service import Object, BusName
 from dbus.mainloop.glib import DBusGMainLoop
 from gi.repository.GLib import MainLoop
 
-AppInterface = 'org.mpris2.MediaPlayer2'
-PlayerInterface = 'org.mpris2.MediaPlayer2.Player'
+from mpris2.constants import PlayerInterface, AppInterface
+from mpris2.enums import PlaybackStatus, ShuffleMode
 
 
 class Mpris2Service(Object):
     def __init__(self):
         self.loop = MainLoop()
 
-        DBusGMainLoop(set_as_default=True)
-
-        session_bus = SessionBus()
+        session_bus = SessionBus(mainloop=DBusGMainLoop())
         bus = BusName('org.mpris2.MediaPlayer2.gmd', session_bus)
 
         super().__init__(bus, '/org/mpris2/MediaPlayer2')
 
-        self.playing = False
+        self.state = {
+            'playback_status': PlaybackStatus.Stopped
+        }
 
     def enable(self):
         try:
@@ -30,12 +30,12 @@ class Mpris2Service(Object):
 
     @dbus.service.method(PlayerInterface, in_signature='', out_signature='')
     def PlayPause(self):
-        if self.playing:
-            self.Set(PlayerInterface, 'PlaybackStatus', 'Paused')
-            self.playing = False
+        if self.state['playback_status'] == PlaybackStatus.Playing:
+            self.state['playback_status'] = PlaybackStatus.Paused
+            self.PropertiesChanged(PlayerInterface, {'PlaybackStatus': 'Paused'}, [])
         else:
+            self.state['playback_status'] = PlaybackStatus.Playing
             self.Set(PlayerInterface, 'PlaybackStatus', 'Playing')
-            self.playing = True
 
     @dbus.service.method(PlayerInterface, in_signature='', out_signature='')
     def Next(self):
@@ -88,7 +88,8 @@ class Mpris2Service(Object):
                     'CanPause': True,
                     'CanPlay': True,
                     'Position': 0,
-                    'PlaybackStatus': 'Stopped',
+                    'Shuffle':  ShuffleMode.Off.value,
+                    'PlaybackStatus': self.state['playback_status'].value,
                     'Volume': 0,
                 },
                 signature='sv', variant_level=2
@@ -116,6 +117,10 @@ class Mpris2Service(Object):
                 },
                 signature='sv'
             )
+        raise dbus.exceptions.DBusException(
+            'com.example.UnknownInterface',
+            f'The Foo object does not implement the {interface} interface'
+        )
 
     @dbus.service.method(AppInterface, in_signature='', out_signature='')
     def Quit(self):
