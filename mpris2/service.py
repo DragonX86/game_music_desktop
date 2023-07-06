@@ -5,7 +5,7 @@ from dbus.service import Object, BusName
 from dbus.mainloop.glib import DBusGMainLoop
 from gi.repository.GLib import MainLoop
 
-from mpris2.constants import PlayerInterface, AppInterface
+from mpris2.constants import PlayerInterface, AppInterface, PlayerIdentity, ObjectPath
 from mpris2.enums import PlaybackStatus, ShuffleMode
 
 
@@ -14,9 +14,9 @@ class Mpris2Service(Object):
         self.loop = MainLoop()
 
         session_bus = SessionBus(mainloop=DBusGMainLoop())
-        bus = BusName('org.mpris2.MediaPlayer2.gmd', session_bus)
+        bus = BusName(PlayerIdentity, session_bus)
 
-        super().__init__(bus, '/org/mpris2/MediaPlayer2')
+        super().__init__(bus, ObjectPath)
 
         self.state = {
             'playback_status': PlaybackStatus.Stopped
@@ -97,7 +97,7 @@ class Mpris2Service(Object):
         if interface == AppInterface:
             return Dictionary(
                 {
-                    'Identity': 'org.mpris2.MediaPlayer2.gmd',
+                    'Identity': PlayerIdentity,
                     'CanQuit': True,
                     'CanRaise': True,
                     'HasTrackList': False,
