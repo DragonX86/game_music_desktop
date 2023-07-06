@@ -3,7 +3,7 @@ from flet_core import Column, Row, Container, alignment, colors, Text, TextField
     border_radius, border, Slider
 
 
-def MainPage():
+def MainView():
     data = {'play_status': False, 'repeat_status': False, 'shuffle_status': False}
 
     name_textfield = Ref[TextField]()
@@ -112,6 +112,7 @@ def MainPage():
                         expand=20
                     ),
                     Row(
+
                         spacing=0,
                         controls=[
                             Container(

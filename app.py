@@ -1,8 +1,7 @@
 import flet
-from flet import WEB_BROWSER
 from flet_core import Page, ThemeMode
 
-from pages.main_page import MainPage
+from views.main_view import MainView
 
 
 def main(page: Page):
@@ -23,7 +22,7 @@ def main(page: Page):
         "JetBrainsMono": "fonts/JetBrainsMono.ttf",
     }
 
-    page.add(MainPage())
+    page.add(MainView())
 
 
 if __name__ == '__main__':
